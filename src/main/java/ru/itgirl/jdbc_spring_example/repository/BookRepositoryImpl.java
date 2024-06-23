@@ -26,7 +26,6 @@ public class BookRepositoryImpl implements BookRepository {
     public List<Book> findAllBooks() {
         List<Book> result = new ArrayList<>();
         String SQL_findAllBooks = "Select * from books";
-
         try (Connection connection = dataSource.getConnection();
              Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(SQL_findAllBooks)) {
@@ -44,5 +43,20 @@ public class BookRepositoryImpl implements BookRepository {
         Long id = resultSet.getLong("id");
         String name = resultSet.getString("name");
         return new Book(id, name);
+    }
+
+    public Book findBookById(Long id) {
+        String SQL_findBookById = "Select * from books where id = " + id;
+        Book findBook = null;
+        try (Connection connection = dataSource.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(SQL_findBookById)) {
+            while (resultSet.next()) {
+                findBook = convertRowToBook(resultSet);
+            }
+        } catch (SQLException e) {
+            throw new IllegalStateException(e);
+        }
+        return findBook;
     }
 }
